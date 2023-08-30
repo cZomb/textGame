@@ -6,15 +6,15 @@
 // main thread of program
 int main() 
 {
-	gameStart();	
-	getch();
+	gameStart();	// initialize values
+	getch(); // wait for player input
 
 	// main game loop
 	while(gameLoop)
 	{
-		handleKeys();
-		update();
-		draw();
+		handleKeys(); // handle keyboard input
+		update(); // update value
+		draw(); // draw the screen
 	}
 
 	endwin(); // close window and clear memory buffer
@@ -34,7 +34,7 @@ void gameStart()
 
 	refresh(); // refresh the window to apply changes
 
-	itemCursor = 0;
+	itemCursor = 0; // set default inventory cursor position
 
 	// test console color capability
 	if(!has_colors())
@@ -169,14 +169,15 @@ void gameStart()
 
 void gameEnd()
 {
+	// break the game loop 
 	gameLoop = false;
 }
 
 void cycle()
 {
-	handleKeys();
-	update();
-	draw();
+	handleKeys(); // keyboard input
+	update(); // update values
+	draw(); // redraw screen
 }
 
 void handleKeys()
@@ -189,6 +190,7 @@ void handleKeys()
 
 	int command = getch(); // get player input
 
+	// test normal player input/control
 	if(player->getState()==NORMAL)
 	{
 		switch (command) 
@@ -200,6 +202,7 @@ void handleKeys()
 			player->move(RIGHT);
 			break;
 		case UP_KEY:
+			// test door collisions with main house
 			if(player->getLoc() == OUTSIDE)
 			{
 				for(Object* wall: buildingOut)
@@ -232,6 +235,7 @@ void handleKeys()
 			player->move(DOWN);
 			break;
 		case ITEM_KEY:
+			// open item menu
 			player->setState(ITEM_MENU);
 			break;
 		case ACTION_KEY:
@@ -307,6 +311,7 @@ void handleKeys()
 	} else
 	if(player->getState()==ITEM_MENU)
 	{
+		// handle moving around the item menu
 		switch (command)
 		{
 			case DOWN_KEY:
@@ -329,6 +334,8 @@ void handleKeys()
 					itemCursor--;
 				}
 				break;
+			// action key pressed (default 'f')
+			// handle inventory menu control
 			case ACTION_KEY:
 				if(inventory[itemCursor]!=NULL)
 				{
@@ -376,6 +383,8 @@ void handleKeys()
 
 void update()
 {
+	// if player is inside building, dont draw roof
+	// if player is outside building, draw the roof
 	if(player->getLoc()==OUTSIDE)
 	{
 
@@ -399,9 +408,11 @@ void update()
 		}
 	}
 
+	// update current time
 	time_t now;
 	time(&now);
 
+	// update crop objects staging based on current time vs time planted
 	for(Crop* c: crop)
 	{
 		if(c->getCurrentStage()==0)
@@ -455,6 +466,7 @@ void draw()
 	else
 	if(player->getLoc() == HOUSE)
 	{
+		// draw inside of house
 		attron(COLOR_PAIR(COLOR_WALL));
 		for(Object* wall: buildingIn)
 		{

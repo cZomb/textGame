@@ -22,6 +22,7 @@ int main()
 	return 0; // program completed properly, return 0;
 }
 
+// start of game; initialization
 void gameStart() 
 {
 	use_env(false);
